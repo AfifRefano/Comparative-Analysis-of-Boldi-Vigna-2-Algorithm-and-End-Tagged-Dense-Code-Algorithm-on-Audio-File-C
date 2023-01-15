@@ -1,0 +1,42 @@
+package com.afifrefano.audiocompression.util
+
+import kotlin.math.pow
+
+object EndTaggedDenseCodes {
+    const val METHOD_CODE = 111
+
+    fun getCodeList(size: Int): List<String> {
+        if (size == 0) return emptyList()
+
+        val codes = mutableListOf<String>()
+        for (i in 1..size) {
+            codes.add(encoding(i))
+        }
+        return codes
+    }
+
+    fun encoding(num: Int): String {
+        var bin = ""
+        var n = num
+        var b = 3
+        var s: Int = Math.pow(2.0, (b - 1).toDouble()).toInt()
+        bin = "1" + Integer.toBinaryString(n % s).padStart(b - 1, '0')
+
+        n = (Math.floor(n.toDouble()/s.toDouble())).toInt()
+        while(n > 0) {
+            bin = "0" + Integer.toBinaryString((n - 1)%s).padStart(b - 1, '0') + bin
+            n = (Math.floor((n - 1).toDouble()/s.toDouble())).toInt()
+        }
+        return bin
+    }
+
+    fun getCodeMap(size: Int): Map<String, Int> {
+        if (size == 0) return emptyMap()
+
+        val codeMap = mutableMapOf<String, Int>()
+        for (i in 1..size) {
+            codeMap[encoding(i)] = i - 1
+        }
+        return codeMap
+    }
+}
